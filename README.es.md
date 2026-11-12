@@ -1,4 +1,4 @@
-> **Uso defensivo:** ejecútelo solo en SU computadora y en SUS repositorios. El kit solo lee: no instala, no actualiza, no corrige, no revisa otras computadoras ni llama a ninguna API.
+> **Uso defensivo:** ejecútelo solo en SU computadora y en SUS repositorios. El kit solo lee: no instala, no actualiza, no corrige, no revisa otras computadoras ni envía nada: solo consulta los servidores de actualización de su propio sistema.
 
 # corrija-antes — el reloj de quien defiende
 
@@ -78,7 +78,7 @@ Código de salida: `0` = nada para AHORA · `1` = hay elementos AHORA · `2` = e
 ## Pruebas
 
 ```bash
-python3 testes/run.py        # 48 pruebas con datos inventados
+python3 testes/run.py        # 58 pruebas con datos inventados
 python3 testes/gera_exemplo.py   # vuelve a generar el informe de ejemplo
 ```
 

@@ -187,7 +187,8 @@ def checa_macos():
     if "No new software available" in saida:
         return [achado("atualize", "macOS", "OK", "sistema em dia")]
     n = saida.count("* Label:")
-    return [achado("atualize", "macOS", "AGORA" if n else "SEM TESTE",
+    seg = bool(re.search(r"Security|Rapid|Segurança", saida))
+    return [achado("atualize", "macOS", ("AGORA" if seg else "SEMANA") if n else "SEM TESTE",
                    f"{n} atualização(ões) do sistema esperando" if n else saida[:120],
                    "Ajustes do Sistema → Geral → Atualização de Software.")]
 
@@ -321,7 +322,7 @@ def parse_lsof(saida):
     return portas
 
 
-def checa_portas():
+def checa_portas(do_docker=()):
     if shutil.which("ss"):
         r = rodar(["ss", "-H", "-tlnp"])
         portas = parse_ss(r[1]) if r and r[0] == 0 else None
@@ -340,7 +341,7 @@ def checa_portas():
             vistas[porta] = (cl, proc)
     out = []
     abertas = sorted(p for p, (cl, _) in vistas.items() if cl in ("todas", "publica"))
-    criticas = [p for p in abertas if p in PORTAS_CRITICAS]
+    criticas = [p for p in abertas if p in PORTAS_CRITICAS and p not in do_docker]
     locais = sorted(p for p, (cl, _) in vistas.items() if cl == "local")
     internas = sorted(p for p, (cl, _) in vistas.items() if cl == "interna")
     for p in criticas:
@@ -351,7 +352,7 @@ def checa_portas():
                           + ". Se o roteador ou a nuvem deixar passar, qualquer um na internet tenta entrar.",
                           "Se só você usa: prender em 127.0.0.1 na configuração do serviço. "
                           "Se outra máquina usa: liberar só o IP dela no firewall, e pôr senha."))
-    outras = [p for p in abertas if p not in PORTAS_CRITICAS and p != 22]
+    outras = [p for p in abertas if p not in PORTAS_CRITICAS and p != 22 and p not in do_docker]
     if outras:
         out.append(achado("vigie", "Outras portas abertas para a rede", "SEMANA",
                           f"{len(outras)} porta(s) escutando em todos os endereços: "
@@ -484,39 +485,60 @@ SEGREDOS = [
     ("token Slack", re.compile(r"\bxox[abpr]-[A-Za-z0-9\-]{10,}")),
     ("chave Google", re.compile(r"\bAIza[0-9A-Za-z_\-]{35}\b")),
     ("token Telegram", re.compile(r"\b\d{8,10}:AA[0-9A-Za-z_\-]{33}\b")),
+    ("token Mercado Pago", re.compile(r"\bAPP_USR-\d{6,}-\d{6}-[0-9a-f]{32}-\d{6,}")),
+    ("chave Groq", re.compile(r"\bgsk_[A-Za-z0-9]{40,}")),
+    ("token Hugging Face", re.compile(r"\bhf_[A-Za-z0-9]{30,}")),
+    ("token GitLab", re.compile(r"\bglpat-[A-Za-z0-9_\-]{20,}")),
+    ("chave SendGrid", re.compile(r"\bSG\.[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]{30,}")),
+    ("senha em endereço de banco", re.compile(r"\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|redis|amqp)://[^:\s/@]+:[^@\s/]{4,}@[^\s'\"]+")),
     ("chave privada", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA |ENCRYPTED |PGP )?PRIVATE KEY(?: BLOCK)?-----")),
 ]
 EXEMPLO_ENV = re.compile(r"\.(example|sample|exemplo|template|dist)$", re.I)
 PREFIXO = re.compile(r"^(sk-(ant-(api\d\d-)?|proj-|svcacct-)?|[sr]k_(live|test)_|AKIA|AIza|gh[pousr]_|github_pat_|xox[abpr]-)")
 
 
+def lista(itens, n=30):
+    return "; ".join(itens[:n]) + (f"; … e mais {len(itens) - n} (use --json para a lista inteira)" if len(itens) > n else "")
+
+
 def mascara(s):
     return s[:4] + "…" + f"({len(s)} caracteres)"
 
 
-def parece_chave(tipo, token):
-    """Descarta o que só tem o formato: ex. classe CSS 'sk-spinner-wave-container' (palavras com hífen)."""
+def parece_chave(tipo, token, prox_linha=""):
+    """Descarta o que só tem o formato: classe CSS 'sk-spinner-wave', cabeçalho de chave sem a chave,
+    endereço de banco com senha de mentira (${VAR}, <senha>, password)."""
+    if tipo == "chave privada":
+        return bool(re.fullmatch(r"\s*[A-Za-z0-9+/=]{40,}\s*", prox_linha) or "\\n" in token)
+    if tipo == "senha em endereço de banco":
+        senha = token.split("://", 1)[1].split("@", 1)[0].split(":", 1)[1]
+        return not re.search(r"^[$<{%]|senha|password|pass|secret|xxx|user|usuario|\*\*\*", senha, re.I)
     if tipo != "chave OpenAI/Anthropic":
         return True
+    m = PREFIXO.match(token)
     corpo = PREFIXO.sub("", token)
+    if m.group(0) == "sk-" and ("-" in corpo or len(corpo) < 32):
+        return False   # chave antiga da OpenAI: sk- + 48 letras/números, sem hífen
     return bool(re.search(r"\d", corpo) and re.search(r"[A-Z]", corpo) and re.search(r"[a-z]", corpo))
 
 
 def procura_segredos(texto, arquivo=""):
     """→ [(tipo, linha, trecho_mascarado, parece_exemplo)]"""
     achou = []
-    for n, linha in enumerate(texto.splitlines(), 1):
+    linhas = texto.splitlines()
+    for n, linha in enumerate(linhas, 1):
         if len(linha) > 2000:
             linha = linha[:2000]
+        prox = linhas[n] if n < len(linhas) else ""
         for tipo, rx in SEGREDOS:
             for m in rx.finditer(linha):
-                if parece_chave(tipo, m.group(0)):
+                if parece_chave(tipo, m.group(0), prox[:2000]):
                     achou.append((tipo, n, mascara(m.group(0)), parece_exemplo(arquivo, linha, m.group(0))))
                     break
     return achou
 
 
-CAMINHO_EXEMPLO = re.compile(r"(^|/)(tests?|spec|__tests__|fixtures?|mocks?)(/|$)|(_test|\.test|\.spec|_spec)\.", re.I)
+CAMINHO_EXEMPLO = re.compile(r"(^|/)(tests?|testes?|spec|__tests__|fixtures?|mocks?|exemplos?|examples?|amostras?)(/|$)|(_test|\.test|\.spec|_spec)\.", re.I)
 PALAVRA_EXEMPLO = re.compile(r"\b(exemplo|example|fake|dummy|placeholder|teste|test|xxxx+|your[_-]?(api[_-]?)?key|sua[_-]?chave)\b", re.I)
 
 
@@ -556,7 +578,7 @@ def checa_repo(caminho, agora=None):
         out.append(achado(b, f"{nome}: .env dentro do git", "AGORA",
                           f"{len(envs)} arquivo(s) de senhas versionado(s): {', '.join(envs[:5])}",
                           "Troque TODAS as chaves que estão nele (já estão no histórico), depois "
-                          "`git rm --cached <arquivo>` e ponha `.env` no .gitignore."))
+                          "`git rm --cached <arquivo>` e ponha `.env` e `.env.*` no .gitignore."))
     ci = rodar(["git", "-C", caminho, "check-ignore", "-q", "--no-index", ".env"])
     if ci and ci[0] == 1:
         out.append(achado(b, f"{nome}: .gitignore sem .env", "SEMANA",
@@ -584,13 +606,13 @@ def checa_repo(caminho, agora=None):
             (exemplos if ex else segredos).append(f"{a}:{linha} {tipo} {trecho}{nota}")
     if segredos:
         out.append(achado(b, f"{nome}: segredo escrito no código", "AGORA",
-                          f"{len(segredos)} ocorrência(s): " + "; ".join(segredos[:6]),
+                          f"{len(segredos)} ocorrência(s): " + lista(segredos),
                           "Troque a chave no painel do serviço (apagar do arquivo não basta: ela fica no histórico) "
                           "e leia de variável de ambiente."))
     if exemplos:
         out.append(achado(b, f"{nome}: chave com cara de exemplo", "SEMANA",
                           f"{len(exemplos)} ocorrência(s) em teste ou marcadas como exemplo, provavelmente falsas: "
-                          + "; ".join(exemplos[:4]),
+                          + lista(exemplos),
                           "Abra cada linha e confirme que não é uma chave de verdade."))
     if grandes:
         out.append(achado(b, f"{nome}: arquivos grandes não conferidos", "SEM TESTE",
@@ -700,7 +722,9 @@ def main(argv=None):
         for f in (checa_apt, checa_dnf, checa_brew, checa_macos, checa_snap, checa_npm, checa_docker_imagens):
             achados += f()
     if "vigie" in blocos:
-        ps, vistas = checa_portas()
+        rd = rodar(["docker", "ps", "--format", "{{.Names}}|{{.Ports}}"], timeout=30)
+        do_docker = {p for _, p in parse_docker_ports(rd[1])} if rd and rd[0] == 0 else set()
+        ps, vistas = checa_portas(do_docker)
         achados += ps + checa_firewall() + checa_ssh(vistas) + checa_docker_portas()
     if "codigo" in blocos:
         if not a.repo:

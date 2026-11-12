@@ -1,4 +1,4 @@
-> **Defensive use:** run only on YOUR machine and in YOUR repositories. The kit only reads: it does not install, update, fix, scan other machines, or call any API.
+> **Defensive use:** run only on YOUR machine and in YOUR repositories. The kit only reads: it does not install, update, fix, scan other machines, or send anything out: it only queries your own system's update servers.
 
 # corrija-antes — the defender’s clock
 
@@ -78,7 +78,7 @@ Exit code: `0` = nothing marked AGORA (NOW) · `1` = an item is marked AGORA (NO
 ## Tests
 
 ```bash
-python3 testes/run.py        # 48 tests with invented data
+python3 testes/run.py        # 58 tests with invented data
 python3 testes/gera_exemplo.py   # regenerates the sample report
 ```
 

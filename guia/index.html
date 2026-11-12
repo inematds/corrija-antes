@@ -291,7 +291,7 @@
   <span class="chip">Vídeo</span>
   <h2>A história em <span class="amb">5 minutos</span></h2>
   <p class="sub">O cofre da OpenAI, o teste que assustou todo mundo, o truque que fez a DeepSeek chegar lá e o que você precisa fazer para se proteger.</p>
-  <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><iframe src="https://www.youtube-nocookie.com/embed/1WFT-VgGuPM" title="Vídeo: A China soltou de graça a IA hacker que a OpenAI trancou" style="width:100%;height:100%;border:0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+  <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><iframe referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/1WFT-VgGuPM" title="Vídeo: A China soltou de graça a IA hacker que a OpenAI trancou" style="width:100%;height:100%;border:0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
   <p class="mut" style="margin-top:12px"><a href="https://www.youtube.com/watch?v=1WFT-VgGuPM" target="_blank" rel="noopener">▶ Assistir no YouTube</a> · <a href="https://youtube.com/shorts/-R65CemeRvc" target="_blank" rel="noopener">Versão vertical (celular)</a></p>
 </div></section>
 
@@ -376,7 +376,7 @@
   <h2>Para ir mais fundo: <span class="amb">outros kits INEMA</span></h2>
   <p class="sub">Cada um cuida de uma parte. Todos são grátis, defensivos e rodam no que é seu.</p>
   <div class="grid g3">
-    <a class="card" href="https://inematds.github.io/auditoria-seguranca/guia/" target="_blank" rel="noopener"><h3>🛡️ auditoria-seguranca</h3><p>Testa se os programas do seu servidor ainda confiam em certificados de segurança cujas chaves vazaram, e se o PHP tem uma falha grave de outubro. Bom para servidor e automação.</p></a>
+    <a class="card" href="https://inematds.github.io/auditoria-seguranca/guia/" target="_blank" rel="noopener"><h3>🛡️ auditoria-seguranca</h3><p>Testa se os programas do seu servidor ainda confiam em certificados de segurança cujas chaves vazaram, e se o PHP (a linguagem de muitos sites, como WordPress) tem uma falha grave de outubro. Bom para servidor e automação.</p></a>
     <a class="card" href="https://inematds.github.io/blinda-site/guia/" target="_blank" rel="noopener"><h3>🧱 blinda-site</h3><p>Diagnóstico do seu site olhando por dentro: plano, backup, simulação e dois níveis de risco.</p></a>
     <a class="card" href="https://inematds.github.io/invada-seu-proprio-app/guia/" target="_blank" rel="noopener"><h3>🕵️ invada-seu-proprio-app</h3><p>As 5 brechas mais comuns de app feito com IA (reset de senha, comentários, chatbot, preço, agente), testadas na sua cópia de teste.</p></a>
     <a class="card" href="https://inematds.github.io/agente-blindado/guia/" target="_blank" rel="noopener"><h3>🤖 agente-blindado</h3><p>5 travas contra injeção de prompt (texto escondido num e-mail ou página que vira ordem para o agente) e 10 ataques para testar o seu.</p></a>
@@ -396,7 +396,7 @@
 <section id="oque"><div class="wrap">
   <span class="chip">O que é</span>
   <h2>Um diagnóstico <span class="amb">que só lê</span></h2>
-  <p class="sub">Uso defensivo: rode só na sua máquina e nos seus repositórios. O kit não instala, não atualiza, não corrige, não varre outras máquinas e não chama nenhuma API.</p>
+  <p class="sub">Uso defensivo: rode só na sua máquina e nos seus repositórios. O kit não instala, não atualiza, não corrige, não varre outras máquinas e não envia nada: só consulta os servidores de atualização do seu próprio sistema.</p>
   <div class="grid g3">
     <div class="card"><h3>⏰ relogio.py</h3><p>Confere em segundos os 3 blocos (atualize, vigie a rede, seus buracos) e dá a cada achado uma prioridade: AGORA, SEMANA, SEM TESTE ou OK. Grava <code>relatorio.md</code> e <code>relatorio.json</code>, com IPs e nome da máquina mascarados.</p></div>
     <div class="card"><h3>🤖 Prompt de revisão</h3><p><code>prompts/revisao-com-ia.md</code> põe o Claude Code, o Codex ou um modelo local para revisar o seu código só lendo, e devolver uma tabela do mais grave ao menos grave.</p></div>
@@ -513,7 +513,7 @@
 <section id="roadmap"><div class="wrap">
   <span class="chip">Roadmap</span>
   <h2>Próximos passos</h2>
-  <div class="phase"><div class="tag">Hoje</div><div class="d"><strong>Relógio, prompt e rotina</strong><span>Um script só leitura, 48 testes com dados inventados, Linux e macOS.</span></div></div>
+  <div class="phase"><div class="tag">Hoje</div><div class="d"><strong>Relógio, prompt e rotina</strong><span>Um script só leitura, 58 testes com dados inventados, Linux e macOS.</span></div></div>
   <div class="phase"><div class="tag">Próximo</div><div class="d"><strong>Comparar semanas</strong><span>Ler dois <code>relatorio.json</code> e mostrar o que fechou e o que apareceu.</span></div></div>
   <div class="phase"><div class="tag">Depois</div><div class="d"><strong>Windows</strong><span>Mesmo diagnóstico com os comandos do PowerShell.</span></div></div>
 </div></section>

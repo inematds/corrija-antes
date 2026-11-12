@@ -1,4 +1,4 @@
-> **Uso defensivo:** rode só na SUA máquina e nos SEUS repositórios. O kit só lê: não instala, não atualiza, não corrige, não varre outras máquinas e não chama nenhuma API.
+> **Uso defensivo:** rode só na SUA máquina e nos SEUS repositórios. O kit só lê: não instala, não atualiza, não corrige, não varre outras máquinas e não envia nada: só consulta os servidores de atualização do seu próprio sistema.
 
 # corrija-antes — o relógio de quem defende
 
@@ -78,7 +78,7 @@ Código de saída: `0` = nada para AGORA · `1` = tem item AGORA · `2` = erro d
 ## Testes
 
 ```bash
-python3 testes/run.py        # 48 testes com dados inventados
+python3 testes/run.py        # 58 testes com dados inventados
 python3 testes/gera_exemplo.py   # refaz o relatório de exemplo
 ```
 

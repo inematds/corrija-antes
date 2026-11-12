@@ -86,10 +86,22 @@ GH = "ghp_" + "9fK2xQ7mZ3vB8nL1pR4tY6wE0aS5dG7hJ2kC"
 confere("segredo AWS achado", R.procura_segredos(f'k = "{AWS}"', "app.py")[0][0] == "chave AWS")
 confere("segredo mascarado", AWS not in str(R.procura_segredos(f'k = "{AWS}"', "app.py")))
 confere("token GitHub achado", R.procura_segredos(f"TOKEN={GH}", "deploy.sh")[0][0] == "token GitHub")
-confere("chave privada achada", R.procura_segredos("-----BEGIN OPENSSH PRIVATE KEY-----", "id")[0][0] == "chave privada")
+CORPO_PEM = "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW"
+confere("chave privada achada", R.procura_segredos("-----BEGIN OPENSSH PRIVATE KEY-----\n" + CORPO_PEM, "id")[0][0] == "chave privada")
+confere("só o cabeçalho da chave não acusa", R.procura_segredos('if pem.startswith("-----BEGIN RSA PRIVATE KEY-----"):', "a.py") == [])
+confere("pasta testes/ = exemplo", R.procura_segredos(f'"{AWS}"', "testes/test_pag.py")[0][3] is True)
+confere("sk-learn-Classifier2Model não é chave", R.procura_segredos("sk-learn-Classifier2Model-Version2x", "a.py") == [])
+confere("senha em URL de banco", R.procura_segredos("DB=postgres://loja:Qz8vK2mR7t@db.loja.com/prod", "a.py")[0][0] == "senha em endereço de banco")
+confere("URL de banco com ${VAR} não acusa", R.procura_segredos("DB=postgres://loja:${DB_PASS}@db/prod", "a.py") == [])
+confere("Mercado Pago", R.procura_segredos("APP_USR-1234567-111222-" + "a1b2c3d4e5f60718293a4b5c6d7e8f90" + "-7654321", "a.py")[0][0] == "token Mercado Pago")
+for nome, tok in (("chave Groq", "gsk_" + "Qz8vN2kR7tB4mW9xL3pC6yH1dF5gJ0sAbCdEfGhIj"),
+                  ("token Hugging Face", "hf_" + "Qz8vN2kR7tB4mW9xL3pC6yH1dF5gJ0sA"),
+                  ("token GitLab", "glpat-" + "Qz8vN2kR7tB4mW9xL3pC")):
+    confere(nome, R.procura_segredos(f"k={tok}", "a.py")[0][0] == nome)
+confere("lista longa avisa o resto", "e mais 5" in R.lista([str(i) for i in range(35)]))
 confere("em tests/ = cara de exemplo", R.procura_segredos(f'"{AWS}"', "tests/test_x.py")[0][3] is True)
 confere("em app.py = de verdade", R.procura_segredos(f'"{AWS}"', "src/app.py")[0][3] is False)
-confere("sk-Ab1Ab1… = exemplo (baixa variedade)", R.procura_segredos('k="sk-Ab1Ab1Ab1Ab1Ab1Ab1Ab1Ab1"', "src/a.js")[0][3] is True)
+confere("sk-Ab1Ab1… = exemplo (baixa variedade)", R.procura_segredos('k="sk-' + 'Ab1' * 14 + '"', "src/a.js")[0][3] is True)
 confere("AIza…abcdefgh = exemplo (sequência)", R.procura_segredos('k="AIzaSyDxabcdefghijklmnopqrstuvwxyz12345"', "src/a.js")[0][3] is True)
 confere("classe CSS sk-spinner não é chave", R.procura_segredos('<div class="sk-spinner-wave-container-rect-item">', "a.html") == [])
 confere("'latest' não vira exemplo", R.procura_segredos(f'const latestKey = "sk-proj-Zq8vN2kR7tB4mW9xL3pC6yH1dF5gJ0s"', "src/a.js")[0][3] is False)

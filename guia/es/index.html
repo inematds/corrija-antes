@@ -293,7 +293,7 @@
   <span class="chip">Video</span>
   <h2>La historia en <span class="amb">5 minutos</span></h2>
   <p class="sub">La caja fuerte de OpenAI, la prueba que asustó a todo el mundo, el truco que hizo que DeepSeek llegara hasta ahí y lo que debes hacer para protegerte.</p>
-  <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><iframe src="https://www.youtube-nocookie.com/embed/1WFT-VgGuPM" title="Video: China liberó gratis la IA hacker que OpenAI protegió" style="width:100%;height:100%;border:0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+  <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><iframe referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/1WFT-VgGuPM" title="Video: China liberó gratis la IA hacker que OpenAI protegió" style="width:100%;height:100%;border:0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
   <p class="mut" style="margin-top:12px"><a href="https://www.youtube.com/watch?v=1WFT-VgGuPM" target="_blank" rel="noopener">▶ Ver en YouTube</a> · <a href="https://youtube.com/shorts/-R65CemeRvc" target="_blank" rel="noopener">Versión vertical (celular)</a></p>
 </div></section>
 
@@ -378,7 +378,7 @@
   <h2>Para profundizar: <span class="amb">otros kits INEMA</span></h2>
   <p class="sub">Cada uno se ocupa de una parte. Todos son gratis, defensivos y funcionan en tus propios equipos.</p>
   <div class="grid g3">
-    <a class="card" href="https://inematds.github.io/auditoria-seguranca/guia/" target="_blank" rel="noopener"><h3>🛡️ auditoria-seguranca</h3><p>Comprueba si los programas de tu servidor todavía confían en certificados de seguridad cuyas claves se filtraron, y si PHP tiene una falla grave de octubre. Útil para servidores y automatización.</p></a>
+    <a class="card" href="https://inematds.github.io/auditoria-seguranca/guia/" target="_blank" rel="noopener"><h3>🛡️ auditoria-seguranca</h3><p>Comprueba si los programas de tu servidor todavía confían en certificados de seguridad cuyas claves se filtraron, y si PHP (el lenguaje de muchos sitios, como WordPress) tiene una falla grave de octubre. Útil para servidores y automatización.</p></a>
     <a class="card" href="https://inematds.github.io/blinda-site/guia/" target="_blank" rel="noopener"><h3>🧱 blinda-site</h3><p>Diagnóstico interno de tu sitio: plan, copia de seguridad, simulación y dos niveles de riesgo.</p></a>
     <a class="card" href="https://inematds.github.io/invada-seu-proprio-app/guia/" target="_blank" rel="noopener"><h3>🕵️ invada-seu-proprio-app</h3><p>Las 5 fallas más comunes de las aplicaciones hechas con IA (restablecimiento de contraseña, comentarios, chatbot, precio, agente), probadas en tu copia de prueba.</p></a>
     <a class="card" href="https://inematds.github.io/agente-blindado/guia/" target="_blank" rel="noopener"><h3>🤖 agente-blindado</h3><p>5 bloqueos contra la inyección de prompts (texto oculto en un correo o una página que se convierte en una orden para el agente) y 10 ataques para probar el tuyo.</p></a>
@@ -398,7 +398,7 @@
 <section id="oque"><div class="wrap">
   <span class="chip">Qué es</span>
   <h2>Un diagnóstico <span class="amb">que solo lee</span></h2>
-  <p class="sub">Uso defensivo: ejecútalo solo en tu máquina y en tus repositorios. El kit no instala, no actualiza, no corrige, no analiza otras máquinas ni llama a ninguna API.</p>
+  <p class="sub">Uso defensivo: ejecútalo solo en tu máquina y en tus repositorios. El kit no instala, no actualiza, no corrige, no analiza otras máquinas ni envía nada: solo consulta los servidores de actualización de tu propio sistema.</p>
   <div class="grid g3">
     <div class="card"><h3>⏰ relogio.py</h3><p>Revisa los 3 bloques en segundos (actualizar, vigilar la red, tus puntos débiles) y asigna una prioridad a cada hallazgo: AGORA, SEMANA, SEM TESTE u OK. Guarda <code>relatorio.md</code> y <code>relatorio.json</code>, con las IP y el nombre de la máquina ocultos.</p></div>
     <div class="card"><h3>🤖 Prompt de revisión</h3><p><code>prompts/revisao-com-ia.md</code> permite que Claude Code, Codex o un modelo local revise tu código solo leyendo y entregue una tabla ordenada de lo más grave a lo menos grave.</p></div>
@@ -453,7 +453,7 @@
     <p>En la carpeta del kit, cambia <code>~/seu-projeto</code> por la carpeta de tu proyecto. Tarda pocos segundos.</p>
 <pre><span class="k">python3 relogio.py --repo ~/seu-projeto --saida relatorio</span>
 <span class="c"># un solo bloque: --blocos atualize | vigie | codigo</span>
-<span class="c"># varios proyectos: repita --repo</span></pre>
+<span class="c"># varios proyectos: repite --repo</span></pre>
   </div></div>
 
   <div class="step"><div class="b">2</div><div>
@@ -485,13 +485,13 @@
 
   <div class="step"><div class="b">5</div><div>
     <h3>Pídele a la IA que encuentre lo demás</h3>
-    <p>El script solo encuentra lo evidente. Para errores de lógica (una ruta sin inicio de sesión, un precio que envía el navegador), usa IA. Abre Claude Code, Codex o un modelo local en la carpeta del proyecto y pega el prompt de <a href="https://github.com/inematds/corrija-antes/blob/main/prompts/revisao-com-ia.md" target="_blank" rel="noopener">prompts/revisao-com-ia.md</a>. Después, vuelve a ejecutar el reloj:</p>
+    <p>El script solo encuentra lo evidente. Para errores de lógica (una ruta sin inicio de sesión, un precio que envía el navegador), usa IA. Abre Claude Code, Codex o un modelo local en la carpeta del proyecto y pega el prompt de <a href="https://github.com/inematds/corrija-antes/blob/main/prompts/revisao-com-ia.md" target="_blank" rel="noopener">prompts/revisao-com-ia.md</a> (en portugués). Después, vuelve a ejecutar el reloj:</p>
 <pre><span class="k">python3 relogio.py --blocos codigo --repo ~/seu-projeto</span></pre>
   </div></div>
 
   <div class="step"><div class="b">6</div><div>
     <h3>Cada lunes, a la misma hora (opcional)</h3>
-    <p>Cron ejecuta el reloj y guarda el informe. Sigue siendo solo de lectura: tú haces las correcciones. Una carpeta por fecha permite compararlo con la semana anterior. Encontrarás los detalles en <a href="https://github.com/inematds/corrija-antes/blob/main/ROTINA.md" target="_blank" rel="noopener">ROTINA.md</a>.</p>
+    <p>Cron ejecuta el reloj y guarda el informe. Sigue siendo solo de lectura: tú haces las correcciones. Una carpeta por fecha permite compararlo con la semana anterior. Encontrarás los detalles en <a href="https://github.com/inematds/corrija-antes/blob/main/ROTINA.md" target="_blank" rel="noopener">ROTINA.md</a> (en portugués).</p>
 <pre><span class="k">crontab -e</span>
 <span class="c"># agrega (cambia las rutas):</span>
 <span class="s">0 9 * * 1 python3 ~/corrija-antes/relogio.py --repo ~/seu-projeto --saida ~/relogio/$(date +\%F)</span></pre>
@@ -516,7 +516,7 @@
 <section id="roadmap"><div class="wrap">
   <span class="chip">Hoja de ruta</span>
   <h2>Próximos pasos</h2>
-  <div class="phase"><div class="tag">Hoy</div><div class="d"><strong>Reloj, prompt y rutina</strong><span>Un script de solo lectura, 48 pruebas con datos inventados, Linux y macOS.</span></div></div>
+  <div class="phase"><div class="tag">Hoy</div><div class="d"><strong>Reloj, prompt y rutina</strong><span>Un script de solo lectura, 58 pruebas con datos inventados, Linux y macOS.</span></div></div>
   <div class="phase"><div class="tag">Próximo</div><div class="d"><strong>Comparar semanas</strong><span>Leer dos <code>relatorio.json</code> y mostrar qué se cerró y qué apareció.</span></div></div>
   <div class="phase"><div class="tag">Después</div><div class="d"><strong>Windows</strong><span>El mismo diagnóstico con comandos de PowerShell.</span></div></div>
 </div></section>

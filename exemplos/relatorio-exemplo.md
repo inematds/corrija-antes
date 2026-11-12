@@ -30,7 +30,7 @@ Gerado por `relogio.py` (corrija-antes), só leitura. **Exemplo com dados invent
 
 | Prioridade | Item | O que vi | O que fazer |
 |---|---|---|---|
-| AGORA | minha-loja: .env dentro do git | 1 arquivo(s) de senhas versionado(s): .env | Troque TODAS as chaves que estão nele (já estão no histórico), depois `git rm --cached <arquivo>` e ponha `.env` no .gitignore. |
+| AGORA | minha-loja: .env dentro do git | 1 arquivo(s) de senhas versionado(s): .env | Troque TODAS as chaves que estão nele (já estão no histórico), depois `git rm --cached <arquivo>` e ponha `.env` e `.env.*` no .gitignore. |
 | AGORA | minha-loja: segredo escrito no código | 1 ocorrência(s): pagamento.js:1 chave OpenAI/Anthropic sk-p…(39 caracteres) | Troque a chave no painel do serviço (apagar do arquivo não basta: ela fica no histórico) e leia de variável de ambiente. |
 | SEMANA | minha-loja: .gitignore sem .env | o git não ignora o .env: um `git add .` distraído sobe as suas chaves | Acrescente uma linha `.env` (e `.env.*`) no .gitignore e confira com `git check-ignore -v .env`. |
 | SEMANA | minha-loja: revisão com IA | o script só acha o óbvio; a revisão que pega lógica errada (login, permissão, preço) é com IA | Use o prompt de `prompts/revisao-com-ia.md` no Claude Code, no Codex ou num modelo local. |
