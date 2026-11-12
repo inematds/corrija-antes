@@ -3,10 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-=== META ===
 <title>corrija-antes — El reloj de quienes defienden llegó a cero</title>
 <meta name="description" content="Una IA abierta igualó a la IA hacker protegida de OpenAI y el margen de quienes defienden llegó a cero. Guía con el video, los números y un kit gratis, de solo lectura, que muestra qué corregir AHORA en tu máquina.">
-=== CORPO ===
 <link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/corrija-antes/guia/">
 <link rel="alternate" hreflang="en" href="https://inematds.github.io/corrija-antes/guia/en/">
 <link rel="alternate" hreflang="es" href="https://inematds.github.io/corrija-antes/guia/es/">
@@ -421,13 +419,13 @@
     <tr><th>Bloque</th><th>Qué revisa</th></tr>
     <tr><td>1. Actualiza</td><td>Correcciones de seguridad del sistema (apt, dnf, Homebrew, macOS), snaps, paquetes globales de npm, imágenes Docker en uso con más de 4 meses, reinicio pendiente y cuántos días han pasado desde la última actualización.</td></tr>
     <tr><td>2. Vigila la red</td><td>Qué escucha solo en la máquina, solo en la red interna/VPN o en cualquier red; puertos críticos (bases de datos, Redis, Ollama, VNC/RDP, API de Docker); firewall; SSH con contraseña o root; puertos que Docker publica por encima de ufw.</td></tr>
-    <tr><td>3. Tus puntos débiles</td><td>Con <code>--repo</code>: <code>.env</code> dentro de git, <code>.gitignore</code> sin <code>.env</code>, claves y tokens en el código (el valor aparece oculto), dependencias sin actualizar desde hace más de 4 meses. Formatos reconocidos: AWS, OpenAI/Anthropic, Stripe, GitHub, Slack (token y webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, service_role de Supabase, clave privada, contraseña en una URL de base de datos y contraseñas/claves de <code>wp-config.php</code>. Solo lee los archivos actuales, no el historial de git; una contraseña genérica (<code>password=…</code>) o claves de otros servicios pasan sin aviso.</td></tr>
+    <tr><td>3. Tus puntos débiles</td><td>Con <code>--repo</code>: <code>.env</code> dentro de git, <code>.gitignore</code> sin <code>.env</code>, claves y tokens en el código (el valor aparece oculto), dependencias sin actualizar desde hace más de 4 meses. Formatos reconocidos: AWS, OpenAI/Anthropic, DeepSeek, OpenRouter, Stripe, GitHub, Slack (token y webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, service_role de Supabase, clave privada, contraseña en una URL de base de datos y contraseñas/claves de <code>wp-config.php</code>. Solo lee los archivos actuales, no el historial de git; una contraseña genérica (<code>password=…</code>) o claves de otros servicios pasan sin aviso.</td></tr>
   </table>
   <table class="n" style="margin-top:18px">
     <tr><th>Prioridad</th><th>Significa</th></tr>
-    <tr><td><b>AGORA</b></td><td>corrección de seguridad pendiente, base de datos/Redis/Ollama/escritorio remoto abierto a la red, SSH con contraseña, secreto en el código</td></tr>
-    <tr><td><b>SEMANA</b></td><td>actualización común, puerto abierto para revisar, firewall apagado, imagen Docker vieja, <code>.env</code> fuera de <code>.gitignore</code>, clave con apariencia de ejemplo</td></tr>
-    <tr><td><b>SEM TESTE</b></td><td>no se pudo revisar (falta permiso o herramienta). No significa que sea seguro.</td></tr>
+    <tr><td><b>AGORA</b> (ahora)</td><td>corrección de seguridad pendiente, base de datos/Redis/Ollama/escritorio remoto abierto a la red, SSH con contraseña, secreto en el código</td></tr>
+    <tr><td><b>SEMANA</b> (esta semana)</td><td>actualización común, puerto abierto para revisar, firewall apagado, imagen Docker vieja, <code>.env</code> fuera de <code>.gitignore</code>, clave con apariencia de ejemplo</td></tr>
+    <tr><td><b>SEM TESTE</b> (sin prueba)</td><td>no se pudo revisar (falta permiso o herramienta). No significa que sea seguro.</td></tr>
     <tr><td><b>OK</b></td><td>revisado y al día</td></tr>
   </table>
 </div></section>
@@ -494,14 +492,14 @@
     <p>Cron ejecuta el reloj y guarda el informe. Sigue siendo solo de lectura: tú haces las correcciones. Una carpeta por fecha permite compararlo con la semana anterior. Encontrarás los detalles en <a href="https://github.com/inematds/corrija-antes/blob/main/ROTINA.md" target="_blank" rel="noopener">ROTINA.md</a> (en portugués).</p>
 <pre><span class="k">crontab -e</span>
 <span class="c"># agrega (cambia las rutas):</span>
-<span class="s">0 9 * * 1 python3 ~/corrija-antes/relogio.py --repo ~/seu-projeto --saida ~/relogio/$(date +\%F)</span></pre>
+<span class="s">0 9 * * 1 python3 ~/corrija-antes/relogio.py --repo ~/seu-projeto --saida ~/relogio/$(date +\%F) &gt;/dev/null 2&gt;&amp;1</span></pre>
   </div></div>
 </div></section>
 
 <section id="exemplos"><div class="wrap">
   <span class="chip">Ejemplo</span>
   <h2>Un informe <span class="amb">real</span>, con datos inventados</h2>
-  <p class="sub">Servidor ficticio de una tienda: 8 elementos para AGORA y 7 para la semana. El informe completo está en <a href="https://github.com/inematds/corrija-antes/blob/main/exemplos/relatorio-exemplo.md" target="_blank" rel="noopener">exemplos/relatorio-exemplo.md</a> (en portugués).</p>
+  <p class="sub">Servidor ficticio de una tienda: 8 elementos para AGORA y 6 para la semana. El informe completo está en <a href="https://github.com/inematds/corrija-antes/blob/main/exemplos/relatorio-exemplo.md" target="_blank" rel="noopener">exemplos/relatorio-exemplo.md</a> (en portugués).</p>
   <table class="n">
     <tr><th>Prioridad</th><th>Elemento</th><th>Qué hacer</th></tr>
     <tr><td><b>AGORA</b></td><td>2 correcciones de seguridad del sistema (openssl, openssh-server); última actualización hace 52 días</td><td>copia de seguridad, <code>apt upgrade</code>, actualizar cada semana</td></tr>
@@ -516,7 +514,7 @@
 <section id="roadmap"><div class="wrap">
   <span class="chip">Hoja de ruta</span>
   <h2>Próximos pasos</h2>
-  <div class="phase"><div class="tag">Hoy</div><div class="d"><strong>Reloj, prompt y rutina</strong><span>Un script de solo lectura, 73 pruebas con datos inventados, Linux y macOS.</span></div></div>
+  <div class="phase"><div class="tag">Hoy</div><div class="d"><strong>Reloj, prompt y rutina</strong><span>Un script de solo lectura, 82 pruebas con datos inventados, Linux y macOS.</span></div></div>
   <div class="phase"><div class="tag">Próximo</div><div class="d"><strong>Comparar semanas</strong><span>Leer dos <code>relatorio.json</code> y mostrar qué se cerró y qué apareció.</span></div></div>
   <div class="phase"><div class="tag">Después</div><div class="d"><strong>Windows</strong><span>El mismo diagnóstico con comandos de PowerShell.</span></div></div>
 </div></section>

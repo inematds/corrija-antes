@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>corrija-antes — The defender’s clock has run out</title>
 <meta name="description" content="An open AI has matched OpenAI’s locked-down hacker AI, and defenders’ head start is gone. A guide with the video, the numbers, and a free, read-only kit that shows what to fix on your machine RIGHT NOW.">
-=== CORPO ===
 <link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/corrija-antes/guia/">
 <link rel="alternate" hreflang="en" href="https://inematds.github.io/corrija-antes/guia/en/">
 <link rel="alternate" hreflang="es" href="https://inematds.github.io/corrija-antes/guia/es/">
@@ -420,13 +419,13 @@
     <tr><th>Area</th><th>What it checks</th></tr>
     <tr><td>1. Update</td><td>System security updates (apt, dnf, Homebrew, macOS), snaps, global npm packages, Docker images in use that are over 4 months old, pending restart, and how many days since the last update.</td></tr>
     <tr><td>2. Monitor the network</td><td>What listens only on the machine, only on the internal network/VPN, or on any network; critical ports (databases, Redis, Ollama, VNC/RDP, Docker API); firewall; SSH with password or root; ports Docker publishes around ufw.</td></tr>
-    <tr><td>3. Your own holes</td><td>With <code>--repo</code>: <code>.env</code> tracked by git, <code>.gitignore</code> without <code>.env</code>, keys and tokens in code (values are masked), dependencies that haven’t been updated for over 4 months. Recognized formats: AWS, OpenAI/Anthropic, Stripe, GitHub, Slack (token and webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, Supabase service_role, private key, password in a database URL, and <code>wp-config.php</code> passwords/keys. It only reads the current files, not the git history; a generic password (<code>password=…</code>) or keys from other services go unnoticed.</td></tr>
+    <tr><td>3. Your own holes</td><td>With <code>--repo</code>: <code>.env</code> tracked by git, <code>.gitignore</code> without <code>.env</code>, keys and tokens in code (values are masked), dependencies that haven’t been updated for over 4 months. Recognized formats: AWS, OpenAI/Anthropic, DeepSeek, OpenRouter, Stripe, GitHub, Slack (token and webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, Supabase service_role, private key, password in a database URL, and <code>wp-config.php</code> passwords/keys. It only reads the current files, not the git history; a generic password (<code>password=…</code>) or keys from other services go unnoticed.</td></tr>
   </table>
   <table class="n" style="margin-top:18px">
     <tr><th>Priority</th><th>Meaning</th></tr>
-    <tr><td><b>AGORA</b></td><td>security update waiting, database/Redis/Ollama/remote desktop open to the network, SSH with password, secret in code</td></tr>
-    <tr><td><b>SEMANA</b></td><td>regular update, open port to check, firewall off, old Docker image, <code>.env</code> missing from <code>.gitignore</code>, key that looks like an example</td></tr>
-    <tr><td><b>SEM TESTE</b></td><td>couldn’t check (missing permission or tool). This does not count as secure.</td></tr>
+    <tr><td><b>AGORA</b> (now)</td><td>security update waiting, database/Redis/Ollama/remote desktop open to the network, SSH with password, secret in code</td></tr>
+    <tr><td><b>SEMANA</b> (this week)</td><td>regular update, open port to check, firewall off, old Docker image, <code>.env</code> missing from <code>.gitignore</code>, key that looks like an example</td></tr>
+    <tr><td><b>SEM TESTE</b> (not tested)</td><td>couldn’t check (missing permission or tool). This does not count as secure.</td></tr>
     <tr><td><b>OK</b></td><td>checked and up to date</td></tr>
   </table>
 </div></section>
@@ -493,14 +492,14 @@
     <p>Cron runs the clock and saves the report. It still only reads: you make the fixes. A separate folder for each date makes it easy to compare with the previous week. Details in <a href="https://github.com/inematds/corrija-antes/blob/main/ROTINA.md" target="_blank" rel="noopener">ROTINA.md</a> (in Portuguese).</p>
 <pre><span class="k">crontab -e</span>
 <span class="c"># add (replace the paths):</span>
-<span class="s">0 9 * * 1 python3 ~/corrija-antes/relogio.py --repo ~/seu-projeto --saida ~/relogio/$(date +\%F)</span></pre>
+<span class="s">0 9 * * 1 python3 ~/corrija-antes/relogio.py --repo ~/seu-projeto --saida ~/relogio/$(date +\%F) &gt;/dev/null 2&gt;&amp;1</span></pre>
   </div></div>
 </div></section>
 
 <section id="exemplos"><div class="wrap">
   <span class="chip">Example</span>
   <h2>A <span class="amb">real</span> report, with made-up data</h2>
-  <p class="sub">A fictional shop server: 8 items marked AGORA, 7 for the week. The full report is in <a href="https://github.com/inematds/corrija-antes/blob/main/exemplos/relatorio-exemplo.md" target="_blank" rel="noopener">exemplos/relatorio-exemplo.md</a> (in Portuguese).</p>
+  <p class="sub">A fictional shop server: 8 items marked AGORA, 6 for the week. The full report is in <a href="https://github.com/inematds/corrija-antes/blob/main/exemplos/relatorio-exemplo.md" target="_blank" rel="noopener">exemplos/relatorio-exemplo.md</a> (in Portuguese).</p>
   <table class="n">
     <tr><th>Priority</th><th>Item</th><th>What to do</th></tr>
     <tr><td><b>AGORA</b></td><td>2 system security updates (openssl, openssh-server); last update was 52 days ago</td><td>back up, <code>apt upgrade</code>, update every week</td></tr>
@@ -515,7 +514,7 @@
 <section id="roadmap"><div class="wrap">
   <span class="chip">Roadmap</span>
   <h2>Next steps</h2>
-  <div class="phase"><div class="tag">Today</div><div class="d"><strong>Clock, prompt, and routine</strong><span>A read-only script, 73 tests with made-up data, Linux and macOS.</span></div></div>
+  <div class="phase"><div class="tag">Today</div><div class="d"><strong>Clock, prompt, and routine</strong><span>A read-only script, 82 tests with made-up data, Linux and macOS.</span></div></div>
   <div class="phase"><div class="tag">Next</div><div class="d"><strong>Compare weeks</strong><span>Read two <code>relatorio.json</code> files and show what was fixed and what appeared.</span></div></div>
   <div class="phase"><div class="tag">Later</div><div class="d"><strong>Windows</strong><span>The same diagnosis using PowerShell commands.</span></div></div>
 </div></section>

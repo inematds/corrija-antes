@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4 — 12/11/2026
+- Chave longa de verdade não cai mais em "exemplo" (variedade por contagem); marcadores `your-…-here` viram exemplo; chave privada no JSON do Google/Firebase; `redis://:senha@`; DeepSeek e OpenRouter; WordPress mostra o nome da constante; "revisão com IA" virou lembrete OK.
+- Guias EN/ES sem sobra de tradução no topo; AGORA/SEMANA traduzidos entre parênteses; linha do cron igual à da ROTINA. 82 testes.
+
 ## 1.0.3 — 12/11/2026
 - `relatorio.json` leva a lista inteira de ocorrências (campo `itens`); `wp-config.php` só acusa com senha escrita (o que lê `getenv()` passa). 73 testes.
 

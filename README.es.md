@@ -29,7 +29,7 @@ Verás una lista en pantalla y un `relatorio/relatorio.md`. Cada elemento tiene 
 | Prioridad | Qué significa |
 |---|---|
 | **AGORA** (AHORA) | corrección de seguridad pendiente, base de datos/Redis/Ollama/pantalla remota abierta a la red, SSH con contraseña, secreto en el código |
-| **SEMANA** (SEMANA) | actualización común, puerto abierto que debes revisar, firewall desactivado, imagen Docker de hace más de 4 meses |
+| **SEMANA** (esta semana) | actualización común, puerto abierto que debes revisar, firewall desactivado, imagen Docker de hace más de 4 meses, `.env` fuera del `.gitignore`, clave con cara de ejemplo, dependencias estancadas |
 | **SEM TESTE** (SIN PRUEBA) | no se pudo verificar (faltan permisos o herramientas): no significa que sea seguro |
 | **OK** (BIEN) | verificado y al día |
 
@@ -41,7 +41,7 @@ Consulta un [informe de ejemplo](exemplos/relatorio-exemplo.md) (servidor fictic
 2. **Vigila la red**: qué está escuchando solo en la computadora, solo en la red interna/VPN o abierto a cualquier red; puertos críticos (bases de datos, Redis, Ollama, VNC/RDP, API de Docker); firewall; SSH con contraseña o como root; puertos que Docker publica **por encima de ufw**.
 3. **Tus brechas** (`--repo`): `.env` dentro de git, `.gitignore` sin `.env`, claves y tokens escritos en el código (el valor aparece oculto), dependencias sin cambios desde hace más de 4 meses y el recordatorio de la revisión con IA.
 
-   Formatos reconocidos: AWS, OpenAI/Anthropic, Stripe, GitHub, Slack (token y webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, service_role de Supabase, clave privada, contraseña en una URL de base de datos y contraseñas/claves de `wp-config.php`. Solo lee los archivos actuales, no el historial de git; una contraseña genérica (`password=…`) o claves de otros servicios pasan sin aviso.
+   Formatos reconocidos: AWS, OpenAI/Anthropic, DeepSeek, OpenRouter, Stripe, GitHub, Slack (token y webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, service_role de Supabase, clave privada, contraseña en una URL de base de datos y contraseñas/claves de `wp-config.php`. Solo lee los archivos actuales, no el historial de git; una contraseña genérica (`password=…`) o claves de otros servicios pasan sin aviso.
 
 ## Opciones
 
@@ -80,7 +80,7 @@ Código de salida: `0` = nada para AHORA · `1` = hay elementos AHORA · `2` = e
 ## Pruebas
 
 ```bash
-python3 testes/run.py        # 73 pruebas con datos inventados
+python3 testes/run.py        # 82 pruebas con datos inventados
 python3 testes/gera_exemplo.py   # vuelve a generar el informe de ejemplo
 ```
 

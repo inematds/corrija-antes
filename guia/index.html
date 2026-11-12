@@ -419,7 +419,7 @@
     <tr><th>Bloco</th><th>O que confere</th></tr>
     <tr><td>1. Atualize</td><td>Correções de segurança do sistema (apt, dnf, Homebrew, macOS), snaps, pacotes globais do npm, imagens Docker em uso com mais de 4 meses, reinício pendente e há quantos dias foi a última atualização.</td></tr>
     <tr><td>2. Vigie a rede</td><td>O que escuta só na máquina, só na rede interna/VPN ou para qualquer rede; portas críticas (bancos, Redis, Ollama, VNC/RDP, API do Docker); firewall; SSH com senha ou root; portas que o Docker publica por cima do ufw.</td></tr>
-    <tr><td>3. Seus buracos</td><td>Com <code>--repo</code>: <code>.env</code> dentro do git, <code>.gitignore</code> sem <code>.env</code>, chaves e tokens no código (o valor sai mascarado), dependências paradas há mais de 4 meses. Formatos reconhecidos: AWS, OpenAI/Anthropic, Stripe, GitHub, Slack (token e webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, service_role do Supabase, chave privada, senha em endereço de banco e senhas/chaves do <code>wp-config.php</code>. Olha só os arquivos atuais, não o histórico do git; senha genérica (<code>password=…</code>) e chave de outros serviços passam sem aviso.</td></tr>
+    <tr><td>3. Seus buracos</td><td>Com <code>--repo</code>: <code>.env</code> dentro do git, <code>.gitignore</code> sem <code>.env</code>, chaves e tokens no código (o valor sai mascarado), dependências paradas há mais de 4 meses. Formatos reconhecidos: AWS, OpenAI/Anthropic, DeepSeek, OpenRouter, Stripe, GitHub, Slack (token e webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, service_role do Supabase, chave privada, senha em endereço de banco e senhas/chaves do <code>wp-config.php</code>. Olha só os arquivos atuais, não o histórico do git; senha genérica (<code>password=…</code>) e chave de outros serviços passam sem aviso.</td></tr>
   </table>
   <table class="n" style="margin-top:18px">
     <tr><th>Prioridade</th><th>Quer dizer</th></tr>
@@ -491,14 +491,14 @@
     <p>O cron roda o relógio e guarda o relatório. Ele continua só lendo: a correção segue com você. Uma pasta por data deixa comparar com a semana anterior. Detalhes em <a href="https://github.com/inematds/corrija-antes/blob/main/ROTINA.md" target="_blank" rel="noopener">ROTINA.md</a>.</p>
 <pre><span class="k">crontab -e</span>
 <span class="c"># acrescente (troque os caminhos):</span>
-<span class="s">0 9 * * 1 python3 ~/corrija-antes/relogio.py --repo ~/seu-projeto --saida ~/relogio/$(date +\%F)</span></pre>
+<span class="s">0 9 * * 1 python3 ~/corrija-antes/relogio.py --repo ~/seu-projeto --saida ~/relogio/$(date +\%F) &gt;/dev/null 2&gt;&amp;1</span></pre>
   </div></div>
 </div></section>
 
 <section id="exemplos"><div class="wrap">
   <span class="chip">Exemplo</span>
   <h2>Um relatório de <span class="amb">verdade</span>, com dados inventados</h2>
-  <p class="sub">Servidor fictício de uma loja: 8 itens para AGORA, 7 para a semana. O relatório completo está em <a href="https://github.com/inematds/corrija-antes/blob/main/exemplos/relatorio-exemplo.md" target="_blank" rel="noopener">exemplos/relatorio-exemplo.md</a>.</p>
+  <p class="sub">Servidor fictício de uma loja: 8 itens para AGORA, 6 para a semana. O relatório completo está em <a href="https://github.com/inematds/corrija-antes/blob/main/exemplos/relatorio-exemplo.md" target="_blank" rel="noopener">exemplos/relatorio-exemplo.md</a>.</p>
   <table class="n">
     <tr><th>Prioridade</th><th>Item</th><th>O que fazer</th></tr>
     <tr><td><b>AGORA</b></td><td>2 correções de segurança do sistema (openssl, openssh-server); última atualização há 52 dias</td><td>backup, <code>apt upgrade</code>, atualizar toda semana</td></tr>
@@ -513,7 +513,7 @@
 <section id="roadmap"><div class="wrap">
   <span class="chip">Roadmap</span>
   <h2>Próximos passos</h2>
-  <div class="phase"><div class="tag">Hoje</div><div class="d"><strong>Relógio, prompt e rotina</strong><span>Um script só leitura, 73 testes com dados inventados, Linux e macOS.</span></div></div>
+  <div class="phase"><div class="tag">Hoje</div><div class="d"><strong>Relógio, prompt e rotina</strong><span>Um script só leitura, 82 testes com dados inventados, Linux e macOS.</span></div></div>
   <div class="phase"><div class="tag">Próximo</div><div class="d"><strong>Comparar semanas</strong><span>Ler dois <code>relatorio.json</code> e mostrar o que fechou e o que apareceu.</span></div></div>
   <div class="phase"><div class="tag">Depois</div><div class="d"><strong>Windows</strong><span>Mesmo diagnóstico com os comandos do PowerShell.</span></div></div>
 </div></section>

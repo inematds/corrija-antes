@@ -32,7 +32,7 @@ import subprocess
 import sys
 import time
 
-VERSAO = "1.0.3"
+VERSAO = "1.0.4"
 NIVEIS = ["AGORA", "SEMANA", "SEM TESTE", "OK"]
 DIA = 86400
 
@@ -479,7 +479,7 @@ def checa_docker_portas():
 
 SEGREDOS = [
     ("chave AWS", re.compile(r"\bAKIA[0-9A-Z]{16}\b")),
-    ("chave OpenAI/Anthropic", re.compile(r"\bsk-(?:ant-(?:api\d\d-)?|proj-|svcacct-)?[A-Za-z0-9_\-]{20,}")),
+    ("chave OpenAI/Anthropic", re.compile(r"\bsk-(?:ant-(?:api\d\d-)?|proj-|svcacct-|or-v1-)?[A-Za-z0-9_\-]{20,}")),
     ("chave Stripe", re.compile(r"\b[sr]k_(?:live|test)_[0-9A-Za-z]{20,}")),
     ("token GitHub", re.compile(r"\b(?:ghp|gho|ghs|ghu|ghr)_[A-Za-z0-9]{30,}\b|\bgithub_pat_[A-Za-z0-9_]{40,}")),
     ("token Slack", re.compile(r"\bxox[abpr]-[A-Za-z0-9\-]{10,}")),
@@ -495,11 +495,11 @@ SEGREDOS = [
     ("token npm", re.compile(r"\bnpm_[A-Za-z0-9]{36}\b")),
     ("chave Resend", re.compile(r"\bre_[A-Za-z0-9]{6,}_[A-Za-z0-9]{12,}")),
     ("senha/chave do WordPress", re.compile(r"define\(\s*['\"](?:DB_PASSWORD|(?:SECURE_AUTH|LOGGED_IN|NONCE|AUTH)_(?:KEY|SALT))['\"]\s*,\s*['\"][^'\"]{4,}['\"]")),
-    ("senha em endereço de banco", re.compile(r"\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|redis|amqp)://[^:\s/@]+:[^@\s/]{4,}@[^\s'\"]+")),
+    ("senha em endereço de banco", re.compile(r"\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|redis|amqp)://[^:\s/@]*:[^@\s/]{4,}@[^\s'\"]+")),
     ("chave privada", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA |ENCRYPTED |PGP )?PRIVATE KEY(?: BLOCK)?-----")),
 ]
 EXEMPLO_ENV = re.compile(r"\.(example|sample|exemplo|template|dist)$", re.I)
-PREFIXO = re.compile(r"^(sk-(ant-(api\d\d-)?|proj-|svcacct-)?|[sr]k_(live|test)_|AKIA|AIza|gh[pousr]_|github_pat_|xox[abpr]-)")
+PREFIXO = re.compile(r"^(sk-(ant-(api\d\d-)?|proj-|svcacct-|or-v1-)?|[sr]k_(live|test)_|AKIA|AIza|gh[pousr]_|github_pat_|xox[abpr]-)")
 
 
 def lista(itens, n=30):
@@ -510,11 +510,11 @@ def mascara(s):
     return s[:4] + "…" + f"({len(s)} caracteres)"
 
 
-def parece_chave(tipo, token, prox_linha=""):
+def parece_chave(tipo, token, prox_linha="", resto=""):
     """Descarta o que só tem o formato: classe CSS 'sk-spinner-wave', cabeçalho de chave sem a chave,
     endereço de banco com senha de mentira (${VAR}, <senha>, password)."""
-    if tipo == "chave privada":
-        return bool(re.fullmatch(r"\s*[A-Za-z0-9+/=]{40,}\s*", prox_linha) or "\\n" in token)
+    if tipo == "chave privada":   # a chave vem na linha de baixo, ou na mesma linha depois de \n (JSON do Google)
+        return bool(re.fullmatch(r"\s*[A-Za-z0-9+/=]{40,}\s*", prox_linha) or re.match(r"(\\n)+[A-Za-z0-9+/=]{40,}", resto))
     if tipo == "senha em endereço de banco":
         senha = token.split("://", 1)[1].split("@", 1)[0].split(":", 1)[1]
         return not re.search(r"^[$<{%]|senha|password|pass|secret|xxx|user|usuario|\*\*\*", senha, re.I)
@@ -535,6 +535,10 @@ def parece_chave(tipo, token, prox_linha=""):
         return True
     m = PREFIXO.match(token)
     corpo = PREFIXO.sub("", token)
+    if m.group(0) == "sk-" and re.fullmatch(r"[0-9a-f]{32}", corpo):
+        return True    # DeepSeek: sk- + 32 hexadecimais
+    if m.group(0) == "sk-or-v1-":
+        return bool(re.fullmatch(r"[0-9a-f]{64}", corpo))   # OpenRouter
     if m.group(0) == "sk-" and ("-" in corpo or len(corpo) < 32):
         return False   # chave antiga da OpenAI: sk- + 48 letras/números, sem hífen
     return bool(re.search(r"\d", corpo) and re.search(r"[A-Z]", corpo) and re.search(r"[a-z]", corpo))
@@ -550,8 +554,10 @@ def procura_segredos(texto, arquivo=""):
         prox = linhas[n] if n < len(linhas) else ""
         for tipo, rx in SEGREDOS:
             for m in rx.finditer(linha):
-                if parece_chave(tipo, m.group(0), prox[:2000]):
-                    achou.append((tipo, n, mascara(m.group(0)), parece_exemplo(arquivo, linha, m.group(0), tipo)))
+                if parece_chave(tipo, m.group(0), prox[:2000], linha[m.end():m.end() + 200]):
+                    tok = m.group(0)
+                    trecho = re.search(r"[A-Z_]{6,}", tok).group(0) if tipo == "senha/chave do WordPress" else mascara(tok)
+                    achou.append((tipo, n, trecho, parece_exemplo(arquivo, linha, tok, tipo)))
                     break
     return achou
 
@@ -563,7 +569,7 @@ PALAVRA_EXEMPLO = re.compile(r"\b(exemplo|example|fake|dummy|placeholder|teste|t
 def baixa_variedade(token):
     """Valor de mentira: poucos caracteres diferentes (Ab1Ab1…) ou sequência (abcdefgh, 123456)."""
     corpo = PREFIXO.sub("", token)
-    if len(corpo) >= 12 and len(set(corpo)) / len(corpo) < 0.35:
+    if len(corpo) >= 12 and len(set(corpo)) < 10:   # contagem absoluta: chave longa de verdade tem dezenas
         return True
     seq = maior = 1
     for x, y in zip(corpo, corpo[1:]):
@@ -580,7 +586,7 @@ def parece_exemplo(arquivo, linha_txt, token, tipo=""):
     """Chave de mentira: o valor diz EXAMPLE/fake (ex.: AKIAIOSFODNN7EXAMPLE, a de exemplo da AWS), valor
     repetitivo ou em sequência, a variável ao lado diz exemplo/test, ou arquivo de teste. Chave de produção
     (sk_live_) não é rebaixada pela pasta. Chave em docs/ ou .env.example com valor de verdade continua AGORA."""
-    if re.search(r"example|exemplo|fake|dummy|xxxx", token, re.I):
+    if re.search(r"example|exemplo|fake|dummy|xxxx|your|here|goes|replace|seu[_-]|sua[_-]|aqui", token, re.I):
         return True
     if tipo == "senha em endereço de banco":
         usuario, senha = token.split("://", 1)[1].split("@", 1)[0].split(":", 1)
@@ -676,7 +682,7 @@ def checa_repo(caminho, agora=None):
     if not out:
         out.append(achado(b, f"Repositório {nome}", "OK",
                           f"{len(arquivos)} arquivo(s) conferido(s): sem .env, sem segredo conhecido, dependências recentes"))
-    out.append(achado(b, f"{nome}: revisão com IA", "SEMANA",
+    out.append(achado(b, f"{nome}: lembrete — revisão com IA", "OK",
                       "o script só acha o óbvio; a revisão que pega lógica errada (login, permissão, preço) é com IA",
                       "Use o prompt de `prompts/revisao-com-ia.md` no Claude Code, no Codex ou num modelo local."))
     return out
@@ -735,7 +741,7 @@ def imprime(achados):
         print(f"\n== {t} ==")
         for a in dob:
             print(f"  {cores[a['nivel']]}[{a['nivel']}]{fim} {a['item']}: {a['detalhe']}")
-            if a["corrigir"] and a["nivel"] != "OK":
+            if a["corrigir"] and (a["nivel"] != "OK" or "lembrete" in a["item"]):
                 print(f"      → {a['corrigir']}")
     r = resumo(achados)
     print(f"\nResumo: {r['AGORA']} AGORA · {r['SEMANA']} SEMANA · {r['SEM TESTE']} SEM TESTE · {r['OK']} OK")
