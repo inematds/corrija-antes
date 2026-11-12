@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 — 12/11/2026
+- `wp-config.php` versionado e `define('DB_PASSWORD'…)` / chaves do WordPress; service_role do Supabase (a anon, pública, não acusa); webhook do Slack; npm; Resend.
+- Sem falso alarme: chave de exemplo da AWS (…EXAMPLE), `postgres:postgres@localhost`; Mercado Pago real não cai em exemplo; `sk_live_` não é rebaixada pela pasta; palavra "test" só conta perto da chave.
+- README e guia listam os formatos reconhecidos e avisam que o histórico do git não é varrido. 72 testes.
+
 ## 1.0.1 — 12/11/2026
 - Bloco 3 sem falso alarme: cabeçalho de chave privada sem a chave, pasta `testes/`, texto `sk-` sem prefixo real; `.gitignore` conferido pelo próprio git (`check-ignore`).
 - Formatos novos: Stripe, endereço de banco com senha, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid.

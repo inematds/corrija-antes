@@ -420,7 +420,7 @@
     <tr><th>Area</th><th>What it checks</th></tr>
     <tr><td>1. Update</td><td>System security updates (apt, dnf, Homebrew, macOS), snaps, global npm packages, Docker images in use that are over 4 months old, pending restart, and how many days since the last update.</td></tr>
     <tr><td>2. Monitor the network</td><td>What listens only on the machine, only on the internal network/VPN, or on any network; critical ports (databases, Redis, Ollama, VNC/RDP, Docker API); firewall; SSH with password or root; ports Docker publishes around ufw.</td></tr>
-    <tr><td>3. Your own holes</td><td>With <code>--repo</code>: <code>.env</code> tracked by git, <code>.gitignore</code> without <code>.env</code>, keys and tokens in code (values are masked), dependencies that haven’t been updated for over 4 months.</td></tr>
+    <tr><td>3. Your own holes</td><td>With <code>--repo</code>: <code>.env</code> tracked by git, <code>.gitignore</code> without <code>.env</code>, keys and tokens in code (values are masked), dependencies that haven’t been updated for over 4 months. Recognized formats: AWS, OpenAI/Anthropic, Stripe, GitHub, Slack (token and webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, Supabase service_role, private key, password in a database URL, and <code>wp-config.php</code> passwords/keys. It only reads the current files, not the git history; a generic password (<code>password=…</code>) or keys from other services go unnoticed.</td></tr>
   </table>
   <table class="n" style="margin-top:18px">
     <tr><th>Priority</th><th>Meaning</th></tr>
@@ -515,7 +515,7 @@
 <section id="roadmap"><div class="wrap">
   <span class="chip">Roadmap</span>
   <h2>Next steps</h2>
-  <div class="phase"><div class="tag">Today</div><div class="d"><strong>Clock, prompt, and routine</strong><span>A read-only script, 58 tests with made-up data, Linux and macOS.</span></div></div>
+  <div class="phase"><div class="tag">Today</div><div class="d"><strong>Clock, prompt, and routine</strong><span>A read-only script, 72 tests with made-up data, Linux and macOS.</span></div></div>
   <div class="phase"><div class="tag">Next</div><div class="d"><strong>Compare weeks</strong><span>Read two <code>relatorio.json</code> files and show what was fixed and what appeared.</span></div></div>
   <div class="phase"><div class="tag">Later</div><div class="d"><strong>Windows</strong><span>The same diagnosis using PowerShell commands.</span></div></div>
 </div></section>

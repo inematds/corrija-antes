@@ -41,6 +41,8 @@ See a [sample report](exemplos/relatorio-exemplo.md) (in Portuguese; fictional s
 2. **Watch the network**: what is listening only on the machine, only on the internal network/VPN, or open to any network; critical ports (databases, Redis, Ollama, VNC/RDP, Docker API); firewall; SSH with password or root; ports Docker publishes **over ufw**.
 3. **Your gaps** (`--repo`): `.env` inside git, `.gitignore` without `.env`, keys and tokens written in code (the value is masked), dependencies unchanged for more than 4 months, and a reminder to review with AI.
 
+   Recognized formats: AWS, OpenAI/Anthropic, Stripe, GitHub, Slack (token and webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, Supabase service_role, private key, password in a database URL, and `wp-config.php` passwords/keys. It only reads the current files, not the git history; a generic password (`password=…`) or keys from other services go unnoticed.
+
 ## Options
 
 ```bash
@@ -78,7 +80,7 @@ Exit code: `0` = nothing marked AGORA (NOW) · `1` = an item is marked AGORA (NO
 ## Tests
 
 ```bash
-python3 testes/run.py        # 58 tests with invented data
+python3 testes/run.py        # 72 tests with invented data
 python3 testes/gera_exemplo.py   # regenerates the sample report
 ```
 

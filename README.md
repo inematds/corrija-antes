@@ -41,6 +41,8 @@ Veja um [relatório de exemplo](exemplos/relatorio-exemplo.md) (servidor fictíc
 2. **Vigie a rede**: o que está escutando só na máquina, só na rede interna/VPN ou aberto para qualquer rede; portas críticas (bancos, Redis, Ollama, VNC/RDP, API do Docker); firewall; SSH com senha ou root; portas que o Docker publica **por cima do ufw**.
 3. **Seus buracos** (`--repo`): `.env` dentro do git, `.gitignore` sem `.env`, chaves e tokens escritos no código (o valor sai mascarado), dependências sem mudança há mais de 4 meses e o lembrete da revisão com IA.
 
+   Formatos reconhecidos: AWS, OpenAI/Anthropic, Stripe, GitHub, Slack (token e webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, service_role do Supabase, chave privada, senha em endereço de banco e senhas/chaves do `wp-config.php`. Olha só os arquivos atuais, não o histórico do git; senha genérica (`password=…`) e chave de outros serviços passam sem aviso.
+
 ## Opções
 
 ```bash
@@ -78,7 +80,7 @@ Código de saída: `0` = nada para AGORA · `1` = tem item AGORA · `2` = erro d
 ## Testes
 
 ```bash
-python3 testes/run.py        # 58 testes com dados inventados
+python3 testes/run.py        # 72 testes com dados inventados
 python3 testes/gera_exemplo.py   # refaz o relatório de exemplo
 ```
 

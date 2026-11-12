@@ -98,6 +98,25 @@ for nome, tok in (("chave Groq", "gsk_" + "Qz8vN2kR7tB4mW9xL3pC6yH1dF5gJ0sAbCdEf
                   ("token Hugging Face", "hf_" + "Qz8vN2kR7tB4mW9xL3pC6yH1dF5gJ0sA"),
                   ("token GitLab", "glpat-" + "Qz8vN2kR7tB4mW9xL3pC")):
     confere(nome, R.procura_segredos(f"k={tok}", "a.py")[0][0] == nome)
+import base64, json as _j
+def _jwt(role):
+    b = lambda d: base64.urlsafe_b64encode(_j.dumps(d).encode()).decode().rstrip("=")
+    return b({"alg": "HS256", "typ": "JWT"}) + "." + b({"iss": "supabase", "ref": "abcdefghijklmnop", "role": role, "iat": 1700000000}) + ".Qz8vN2kR7tB4mW9xL3pC6yH1dF5gJ0sA"
+confere("Supabase service_role achada", R.procura_segredos(f'k="{_jwt("service_role")}"', "src/config.js")[0][0] == "chave service_role do Supabase")
+confere("Supabase anon (pública) não acusa", R.procura_segredos(f'k="{_jwt("anon")}"', "src/config.js") == [])
+confere("webhook do Slack", R.procura_segredos("u='https://hooks.slack.com/services/T0ABC123/B0DEF456/Qz8vN2kR7tB4mW9xL3pC6yH1'", "a.js")[0][0] == "webhook do Slack")
+confere("token npm", R.procura_segredos("//registry.npmjs.org/:_authToken=npm_" + "Qz8vN2kR7tB4mW9xL3pC6yH1dF5gJ0sAbCdE", ".npmrc")[0][0] == "token npm")
+confere("chave Resend", R.procura_segredos("RESEND=re_" + "Qz8vN2kR_7tB4mW9xL3pC6yH1", "a.py")[0][0] == "chave Resend")
+confere("re_compile_pattern não é chave", R.procura_segredos("x = re_compile_patternsWithStuff", "a.py") == [])
+confere("wp-config com senha", R.procura_segredos("define( 'DB_PASSWORD', 'Qz8vN2kR7t' );", "wp-config.php")[0][0] == "senha/chave do WordPress")
+confere("wp-config de modelo não acusa", R.procura_segredos("define( 'AUTH_KEY', 'put your unique phrase here' );", "wp-config-sample.php") == [])
+confere("wp-config.php versionado", R.env_versionados(["site/wp-config.php", "wp-config-sample.php"]) == ["site/wp-config.php"])
+MP = "APP_USR-1234567-111222-" + "a1b2c3d4e5f60718293a4b5c6d7e8f90" + "-7654321"
+confere("Mercado Pago real não vira exemplo", R.procura_segredos(f"MP={MP}", "src/pay.js")[0][3] is False)
+confere("AKIAIOSFODNN7EXAMPLE = exemplo", R.procura_segredos("aws_access_key_id = AKIAIOSFODNN7EXAMPLE", "docs/deploy.md")[0][3] is True)
+confere("postgres:postgres@localhost = exemplo", R.procura_segredos("DB=postgres://postgres:postgres@localhost:5432/dev", "a.py")[0][3] is True)
+confere("sk_live em testes/ continua real", R.procura_segredos('STRIPE="sk_live_' + '51Hq8ZkR2vB7nM4xL9pC3tY6"', "testes/fixture.py")[0][3] is False)
+confere("comentário longe com 'test' não rebaixa", R.procura_segredos('k = "sk_live_' + '51Hq8ZkR2vB7nM4xL9pC3tY6"' + "  # usado em test e prod", "src/a.py")[0][3] is False)
 confere("lista longa avisa o resto", "e mais 5" in R.lista([str(i) for i in range(35)]))
 confere("em tests/ = cara de exemplo", R.procura_segredos(f'"{AWS}"', "tests/test_x.py")[0][3] is True)
 confere("em app.py = de verdade", R.procura_segredos(f'"{AWS}"', "src/app.py")[0][3] is False)
@@ -148,7 +167,9 @@ confere("máscara de IP", "192.168" not in m and "127.0.0.1" in m)
 confere("--mostrar-ips mantém", R.mascarar_texto("192.168.0.7", True) == "192.168.0.7")
 md = R.para_markdown([R.achado("vigie", "Porta 6379", "AGORA", "Redis | aberto", "prender")], "01/01/2026")
 confere("markdown escapa |", "Redis \\| aberto" in md and "1 para AGORA" in md)
-confere("--blocos inválido = 2", R.main(["--blocos", "tudo"]) == 2)
+import contextlib, io
+with contextlib.redirect_stderr(io.StringIO()):
+    confere("--blocos inválido = 2", R.main(["--blocos", "tudo"]) == 2)
 
 # ── só leitura: o script não chama nada que muda o sistema ──
 fonte = open(os.path.join(os.path.dirname(AQUI), "relogio.py"), encoding="utf-8").read()

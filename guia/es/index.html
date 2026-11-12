@@ -421,7 +421,7 @@
     <tr><th>Bloque</th><th>Qué revisa</th></tr>
     <tr><td>1. Actualiza</td><td>Correcciones de seguridad del sistema (apt, dnf, Homebrew, macOS), snaps, paquetes globales de npm, imágenes Docker en uso con más de 4 meses, reinicio pendiente y cuántos días han pasado desde la última actualización.</td></tr>
     <tr><td>2. Vigila la red</td><td>Qué escucha solo en la máquina, solo en la red interna/VPN o en cualquier red; puertos críticos (bases de datos, Redis, Ollama, VNC/RDP, API de Docker); firewall; SSH con contraseña o root; puertos que Docker publica por encima de ufw.</td></tr>
-    <tr><td>3. Tus puntos débiles</td><td>Con <code>--repo</code>: <code>.env</code> dentro de git, <code>.gitignore</code> sin <code>.env</code>, claves y tokens en el código (el valor aparece oculto), dependencias sin actualizar desde hace más de 4 meses.</td></tr>
+    <tr><td>3. Tus puntos débiles</td><td>Con <code>--repo</code>: <code>.env</code> dentro de git, <code>.gitignore</code> sin <code>.env</code>, claves y tokens en el código (el valor aparece oculto), dependencias sin actualizar desde hace más de 4 meses. Formatos reconocidos: AWS, OpenAI/Anthropic, Stripe, GitHub, Slack (token y webhook), Google, Telegram, Mercado Pago, Groq, Hugging Face, GitLab, SendGrid, npm, Resend, service_role de Supabase, clave privada, contraseña en una URL de base de datos y contraseñas/claves de <code>wp-config.php</code>. Solo lee los archivos actuales, no el historial de git; una contraseña genérica (<code>password=…</code>) o claves de otros servicios pasan sin aviso.</td></tr>
   </table>
   <table class="n" style="margin-top:18px">
     <tr><th>Prioridad</th><th>Significa</th></tr>
@@ -516,7 +516,7 @@
 <section id="roadmap"><div class="wrap">
   <span class="chip">Hoja de ruta</span>
   <h2>Próximos pasos</h2>
-  <div class="phase"><div class="tag">Hoy</div><div class="d"><strong>Reloj, prompt y rutina</strong><span>Un script de solo lectura, 58 pruebas con datos inventados, Linux y macOS.</span></div></div>
+  <div class="phase"><div class="tag">Hoy</div><div class="d"><strong>Reloj, prompt y rutina</strong><span>Un script de solo lectura, 72 pruebas con datos inventados, Linux y macOS.</span></div></div>
   <div class="phase"><div class="tag">Próximo</div><div class="d"><strong>Comparar semanas</strong><span>Leer dos <code>relatorio.json</code> y mostrar qué se cerró y qué apareció.</span></div></div>
   <div class="phase"><div class="tag">Después</div><div class="d"><strong>Windows</strong><span>El mismo diagnóstico con comandos de PowerShell.</span></div></div>
 </div></section>

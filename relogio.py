@@ -32,7 +32,7 @@ import subprocess
 import sys
 import time
 
-VERSAO = "1.0.1"
+VERSAO = "1.0.2"
 NIVEIS = ["AGORA", "SEMANA", "SEM TESTE", "OK"]
 DIA = 86400
 
@@ -490,6 +490,11 @@ SEGREDOS = [
     ("token Hugging Face", re.compile(r"\bhf_[A-Za-z0-9]{30,}")),
     ("token GitLab", re.compile(r"\bglpat-[A-Za-z0-9_\-]{20,}")),
     ("chave SendGrid", re.compile(r"\bSG\.[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]{30,}")),
+    ("chave service_role do Supabase", re.compile(r"\beyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]{20,}")),
+    ("webhook do Slack", re.compile(r"https://hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]{20,}")),
+    ("token npm", re.compile(r"\bnpm_[A-Za-z0-9]{36}\b")),
+    ("chave Resend", re.compile(r"\bre_[A-Za-z0-9]{6,}_[A-Za-z0-9]{12,}")),
+    ("senha/chave do WordPress", re.compile(r"define\(\s*['\"](?:DB_PASSWORD|(?:SECURE_AUTH|LOGGED_IN|NONCE|AUTH)_(?:KEY|SALT))['\"]\s*,\s*['\"][^'\"]{4,}['\"]")),
     ("senha em endereço de banco", re.compile(r"\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|redis|amqp)://[^:\s/@]+:[^@\s/]{4,}@[^\s'\"]+")),
     ("chave privada", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA |ENCRYPTED |PGP )?PRIVATE KEY(?: BLOCK)?-----")),
 ]
@@ -513,6 +518,19 @@ def parece_chave(tipo, token, prox_linha=""):
     if tipo == "senha em endereço de banco":
         senha = token.split("://", 1)[1].split("@", 1)[0].split(":", 1)[1]
         return not re.search(r"^[$<{%]|senha|password|pass|secret|xxx|user|usuario|\*\*\*", senha, re.I)
+    if tipo == "chave service_role do Supabase":
+        import base64
+        try:
+            meio = token.split(".")[1]
+            dados = base64.urlsafe_b64decode(meio + "=" * (-len(meio) % 4)).decode("utf-8", "replace")
+        except (ValueError, IndexError):
+            return False
+        return '"service_role"' in dados   # a anon key é pública por desenho; só a service_role é segredo
+    if tipo == "senha/chave do WordPress":
+        return not re.search(r"put your unique phrase here|password_here|senha_aqui|^[$<{%]", token, re.I)
+    if tipo == "chave Resend":
+        corpo = token[3:]
+        return bool(re.search(r"\d", corpo) and re.search(r"[A-Z]", corpo) and re.search(r"[a-z]", corpo))
     if tipo != "chave OpenAI/Anthropic":
         return True
     m = PREFIXO.match(token)
@@ -533,7 +551,7 @@ def procura_segredos(texto, arquivo=""):
         for tipo, rx in SEGREDOS:
             for m in rx.finditer(linha):
                 if parece_chave(tipo, m.group(0), prox[:2000]):
-                    achou.append((tipo, n, mascara(m.group(0)), parece_exemplo(arquivo, linha, m.group(0))))
+                    achou.append((tipo, n, mascara(m.group(0)), parece_exemplo(arquivo, linha, m.group(0), tipo)))
                     break
     return achou
 
@@ -554,15 +572,36 @@ def baixa_variedade(token):
     return maior >= 6
 
 
-def parece_exemplo(arquivo, linha_txt, token):
-    """Chave de mentira: valor repetitivo (abc111…), linha que diz exemplo/fake/test (palavra inteira)
-    ou arquivo de teste. Chave em docs/ ou .env.example com valor de verdade continua AGORA."""
-    return baixa_variedade(token) or bool(PALAVRA_EXEMPLO.search(linha_txt)) or bool(CAMINHO_EXEMPLO.search(arquivo))
+SENHAS_FRACAS = {"postgres", "root", "admin", "password", "senha", "123456", "12345678", "secret", "dev", "test",
+                 "teste", "mysql", "redis", "guest", "changeme", "example"}
+
+
+def parece_exemplo(arquivo, linha_txt, token, tipo=""):
+    """Chave de mentira: o valor diz EXAMPLE/fake (ex.: AKIAIOSFODNN7EXAMPLE, a de exemplo da AWS), valor
+    repetitivo ou em sequência, a variável ao lado diz exemplo/test, ou arquivo de teste. Chave de produção
+    (sk_live_) não é rebaixada pela pasta. Chave em docs/ ou .env.example com valor de verdade continua AGORA."""
+    if re.search(r"example|exemplo|fake|dummy|xxxx", token, re.I):
+        return True
+    if tipo == "senha em endereço de banco":
+        usuario, senha = token.split("://", 1)[1].split("@", 1)[0].split(":", 1)
+        host = token.split("@", 1)[1]
+        return senha.lower() in SENHAS_FRACAS or senha == usuario or bool(
+            re.match(r"(localhost|127\.0\.0\.1|0\.0\.0\.0|db|postgres|mysql|redis)([:/]|$)", host)) or bool(
+            CAMINHO_EXEMPLO.search(arquivo))
+    if tipo not in ("token Mercado Pago",) and baixa_variedade(token):
+        return True
+    i = linha_txt.find(token)
+    perto = linha_txt[max(0, i - 40):i] if i >= 0 else ""
+    if PALAVRA_EXEMPLO.search(perto):
+        return True
+    return bool(CAMINHO_EXEMPLO.search(arquivo)) and not re.match(r"[sr]k_live_", token)
 
 
 def env_versionados(arquivos):
+    """.env* e o wp-config.php (o '.env' do WordPress), menos os de exemplo."""
     return [a for a in arquivos
-            if re.search(r"(^|/)\.env(\.[^/]*)?$", a) and not EXEMPLO_ENV.search(a)]
+            if (re.search(r"(^|/)\.env(\.[^/]*)?$", a) or re.search(r"(^|/)wp-config\.php$", a))
+            and not EXEMPLO_ENV.search(a)]
 
 
 def checa_repo(caminho, agora=None):
@@ -578,7 +617,7 @@ def checa_repo(caminho, agora=None):
         out.append(achado(b, f"{nome}: .env dentro do git", "AGORA",
                           f"{len(envs)} arquivo(s) de senhas versionado(s): {', '.join(envs[:5])}",
                           "Troque TODAS as chaves que estão nele (já estão no histórico), depois "
-                          "`git rm --cached <arquivo>` e ponha `.env` e `.env.*` no .gitignore."))
+                          "`git rm --cached <arquivo>` e ponha `.env` e `.env.*` (ou `wp-config.php`) no .gitignore."))
     ci = rodar(["git", "-C", caminho, "check-ignore", "-q", "--no-index", ".env"])
     if ci and ci[0] == 1:
         out.append(achado(b, f"{nome}: .gitignore sem .env", "SEMANA",
