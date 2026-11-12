@@ -32,7 +32,7 @@ import subprocess
 import sys
 import time
 
-VERSAO = "1.0.2"
+VERSAO = "1.0.3"
 NIVEIS = ["AGORA", "SEMANA", "SEM TESTE", "OK"]
 DIA = 86400
 
@@ -503,7 +503,7 @@ PREFIXO = re.compile(r"^(sk-(ant-(api\d\d-)?|proj-|svcacct-)?|[sr]k_(live|test)_
 
 
 def lista(itens, n=30):
-    return "; ".join(itens[:n]) + (f"; … e mais {len(itens) - n} (use --json para a lista inteira)" if len(itens) > n else "")
+    return "; ".join(itens[:n]) + (f"; … e mais {len(itens) - n} (lista inteira em relatorio.json, campo itens)" if len(itens) > n else "")
 
 
 def mascara(s):
@@ -598,10 +598,9 @@ def parece_exemplo(arquivo, linha_txt, token, tipo=""):
 
 
 def env_versionados(arquivos):
-    """.env* e o wp-config.php (o '.env' do WordPress), menos os de exemplo."""
+    """.env*, menos os de exemplo. (wp-config.php só acusa se tiver senha escrita: regra de conteúdo.)"""
     return [a for a in arquivos
-            if (re.search(r"(^|/)\.env(\.[^/]*)?$", a) or re.search(r"(^|/)wp-config\.php$", a))
-            and not EXEMPLO_ENV.search(a)]
+            if re.search(r"(^|/)\.env(\.[^/]*)?$", a) and not EXEMPLO_ENV.search(a)]
 
 
 def checa_repo(caminho, agora=None):
@@ -648,11 +647,13 @@ def checa_repo(caminho, agora=None):
                           f"{len(segredos)} ocorrência(s): " + lista(segredos),
                           "Troque a chave no painel do serviço (apagar do arquivo não basta: ela fica no histórico) "
                           "e leia de variável de ambiente."))
+        out[-1]["itens"] = segredos
     if exemplos:
         out.append(achado(b, f"{nome}: chave com cara de exemplo", "SEMANA",
                           f"{len(exemplos)} ocorrência(s) em teste ou marcadas como exemplo, provavelmente falsas: "
                           + lista(exemplos),
                           "Abra cada linha e confirme que não é uma chave de verdade."))
+        out[-1]["itens"] = exemplos
     if grandes:
         out.append(achado(b, f"{nome}: arquivos grandes não conferidos", "SEM TESTE",
                           f"{len(grandes)} arquivo(s) de texto acima de 1 MB ficaram fora da busca de segredos: "

@@ -110,7 +110,7 @@ confere("chave Resend", R.procura_segredos("RESEND=re_" + "Qz8vN2kR_7tB4mW9xL3pC
 confere("re_compile_pattern não é chave", R.procura_segredos("x = re_compile_patternsWithStuff", "a.py") == [])
 confere("wp-config com senha", R.procura_segredos("define( 'DB_PASSWORD', 'Qz8vN2kR7t' );", "wp-config.php")[0][0] == "senha/chave do WordPress")
 confere("wp-config de modelo não acusa", R.procura_segredos("define( 'AUTH_KEY', 'put your unique phrase here' );", "wp-config-sample.php") == [])
-confere("wp-config.php versionado", R.env_versionados(["site/wp-config.php", "wp-config-sample.php"]) == ["site/wp-config.php"])
+confere("wp-config só com getenv não acusa", R.procura_segredos("define( 'DB_PASSWORD', getenv('DB_PASSWORD') );", "wp-config.php") == [] and R.env_versionados(["wp-config.php"]) == [])
 MP = "APP_USR-1234567-111222-" + "a1b2c3d4e5f60718293a4b5c6d7e8f90" + "-7654321"
 confere("Mercado Pago real não vira exemplo", R.procura_segredos(f"MP={MP}", "src/pay.js")[0][3] is False)
 confere("AKIAIOSFODNN7EXAMPLE = exemplo", R.procura_segredos("aws_access_key_id = AKIAIOSFODNN7EXAMPLE", "docs/deploy.md")[0][3] is True)
@@ -157,6 +157,12 @@ with tempfile.TemporaryDirectory() as d:
     g("commit", "-qm", "limpo")
     niveis = [a["nivel"] for a in R.checa_repo(d)]
     confere("repo limpo: nada AGORA", "AGORA" not in niveis)
+    for i in range(35):
+        open(os.path.join(d, f"k{i}.py"), "w").write(f'T = "{GH[:-2]}{i:02d}"\n')
+    g("add", "-A")
+    g("commit", "-qm", "muitas")
+    seg = [a for a in R.checa_repo(d) if "segredo escrito" in a["item"]][0]
+    confere("35 segredos: lista inteira no campo itens", len(seg["itens"]) == 35 and "e mais 5" in seg["detalhe"])
 
 with tempfile.TemporaryDirectory() as d:
     confere("pasta sem git = SEM TESTE", R.checa_repo(d)[0]["nivel"] == "SEM TESTE")

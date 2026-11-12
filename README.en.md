@@ -80,7 +80,7 @@ Exit code: `0` = nothing marked AGORA (NOW) · `1` = an item is marked AGORA (NO
 ## Tests
 
 ```bash
-python3 testes/run.py        # 72 tests with invented data
+python3 testes/run.py        # 73 tests with invented data
 python3 testes/gera_exemplo.py   # regenerates the sample report
 ```
 

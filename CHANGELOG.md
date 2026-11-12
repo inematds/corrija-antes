@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.3 — 12/11/2026
+- `relatorio.json` leva a lista inteira de ocorrências (campo `itens`); `wp-config.php` só acusa com senha escrita (o que lê `getenv()` passa). 73 testes.
+
 ## 1.0.2 — 12/11/2026
 - `wp-config.php` versionado e `define('DB_PASSWORD'…)` / chaves do WordPress; service_role do Supabase (a anon, pública, não acusa); webhook do Slack; npm; Resend.
 - Sem falso alarme: chave de exemplo da AWS (…EXAMPLE), `postgres:postgres@localhost`; Mercado Pago real não cai em exemplo; `sk_live_` não é rebaixada pela pasta; palavra "test" só conta perto da chave.

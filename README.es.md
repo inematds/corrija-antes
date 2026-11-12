@@ -80,7 +80,7 @@ Código de salida: `0` = nada para AHORA · `1` = hay elementos AHORA · `2` = e
 ## Pruebas
 
 ```bash
-python3 testes/run.py        # 72 pruebas con datos inventados
+python3 testes/run.py        # 73 pruebas con datos inventados
 python3 testes/gera_exemplo.py   # vuelve a generar el informe de ejemplo
 ```
 

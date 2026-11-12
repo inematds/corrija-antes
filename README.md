@@ -80,7 +80,7 @@ Código de saída: `0` = nada para AGORA · `1` = tem item AGORA · `2` = erro d
 ## Testes
 
 ```bash
-python3 testes/run.py        # 72 testes com dados inventados
+python3 testes/run.py        # 73 testes com dados inventados
 python3 testes/gera_exemplo.py   # refaz o relatório de exemplo
 ```
 
