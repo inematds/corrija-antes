@@ -32,7 +32,7 @@ import subprocess
 import sys
 import time
 
-VERSAO = "1.0.0"
+VERSAO = "1.0.1"
 NIVEIS = ["AGORA", "SEMANA", "SEM TESTE", "OK"]
 DIA = 86400
 
